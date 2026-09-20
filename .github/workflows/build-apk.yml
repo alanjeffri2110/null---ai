@@ -1,25 +1,21 @@
 name: Build NULL AI APK
 
-on:
-workflow_dispatch:
-push:
-branches:
-- main
+on: [push, workflow_dispatch]
 
 jobs:
 build:
 runs-on: ubuntu-latest
 
 steps:
-  - name: Checkout repository
+  - name: Checkout
     uses: actions/checkout@v4
 
-  - name: Set up Python
+  - name: Setup Python
     uses: actions/setup-python@v5
     with:
       python-version: "3.11"
 
-  - name: Set up Java
+  - name: Setup Java
     uses: actions/setup-java@v4
     with:
       distribution: temurin
@@ -31,17 +27,7 @@ steps:
       pip install buildozer cython
 
   - name: Build APK
-    run: |
-      set -o pipefail
-      buildozer android debug 2>&1 | tee build.log
-
-  - name: Upload build log
-    if: always()
-    uses: actions/upload-artifact@v4
-    with:
-      name: NULL-AI-Build-Log
-      path: build.log
-      if-no-files-found: warn
+    run: buildozer android debug
 
   - name: Upload APK
     if: success()
